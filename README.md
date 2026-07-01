@@ -1,226 +1,147 @@
-# SmartGlasses AI
+#  SmartGlasses AI
 
-AI-powered smart glasses for visually impaired people.  
-Detects obstacles, reads text (OCR), and recognizes banknotes using voice feedback.
+Système de lunettes intelligentes pour personnes malvoyantes, basé sur une architecture de microservices IA. Une caméra ESP32-CAM capture les images du terrain, qui sont analysées en temps réel par des services d'IA spécialisés (détection d'obstacles, lecture de texte, reconnaissance de billets marocains), puis les résultats sont renvoyés à une application Android via WebSocket.
 
----
-
-## Team
-
-| Member | Role | Service | Branch |
-|--------|------|---------|--------|
-| M1 | Project Lead + API Gateway | `api-gateway/` | `main` + `dev` |
-| M2 | Obstacle Detection | `obstacle-service/` | `feature/M2-obstacle` |
-| M3 | OCR Multilingual | `ocr-service/` | `feature/M3-ocr` |
-| M4 | Money Recognition | `money-service/` | `feature/M4-money` |
-| M5 | Android App | `android-app/` | `feature/M5-android` |
-
----
-
-## Architecture
+##  Architecture
 
 ```
-[SmartGlasses Hardware]
-        ↓ Bluetooth
-[Android App — M5]
-        ↓ WiFi → POST /analyze?mode=obstacle|ocr|money
-[API Gateway :8000 — M1]
-        ├── obstacle → [Obstacle Service :8001 — M2]  YOLO
-        ├── ocr      → [OCR Service     :8002 — M3]  Tesseract + ML Kit
-        └── money    → [Money Service   :8003 — M4]  MobileNet CNN
+ESP32-CAM ──HTTP──> API Gateway (FastAPI) ──┬──> Obstacle Service (YOLOv8)
+                          │                  ├──> OCR Service (Tesseract/EasyOCR)
+                          │                  └──> Money Service (YOLOv8)
+                          │
+                          └──WebSocket──> Application Android
 ```
 
----
+Chaque service IA est un conteneur Docker indépendant, exposé via une API REST interne. L'API Gateway route les requêtes selon le mode demandé (`obstacle`, `ocr`, `money`) et diffuse les résultats en temps réel aux clients connectés via WebSocket.
 
-## Prerequisites
+##  Services
 
-- Docker Desktop (Windows/Mac) or Docker Engine (Linux)
-- Docker Compose v2+
-- Android Studio (M5 only)
-- Git
+| Service | Port | Rôle | Modèle |
+|---|---|---|---|
+| **api-gateway** | 8000 | Point d'entrée unique, routage, WebSocket | FastAPI |
+| **obstacle-service** | 8001 | Détection d'obstacles et distances | YOLOv8 |
+| **ocr-service** | 8002 | Lecture de texte (FR/AR/ES/Tifinagh) | Tesseract + EasyOCR + fallback Groq/Gemini |
+| **money-service** | 8003 | Reconnaissance de billets/pièces marocains | YOLOv8 |
 
----
+Un service **Portainer** est inclus pour la supervision des conteneurs.
 
-## Quick Start
+##  Fonctionnalités clés
 
-### 1. Clone the repository
+- **Routage dynamique** des images selon le mode d'analyse (`/analyze?mode=obstacle|ocr|money`)
+- **Diffusion temps réel** des résultats vers l'application Android via WebSocket (`/ws/resultats`)
+- **OCR multilingue** avec détection automatique de la langue (français, arabe, espagnol) et lecture à voix haute adaptée pour utilisateurs malvoyants
+- **Support du Tifinagh/Amazigh** avec fallback sur un modèle vision (Gemini) lorsque le script n'est pas reconnu par le modèle principal
+- **Limitation de débit et mémoire de contexte** pour l'OCR, afin d'améliorer la cohérence des lectures successives
+- **Statut de connexion ESP32** exposé via `/glasses/status`
+- **Entraînement des modèles** intégré via des conteneurs dédiés (`obstacle-trainer`, `ocr-trainer`, `money-trainer`)
 
-```bash
-git clone https://github.com/your-org/smartglasses-ai.git
-cd smartglasses-ai
-```
+##  Démarrage rapide
 
-### 2. Setup environment variables
+### Prérequis
 
-```bash
-cp .env .env
-# Edit .env and set your machine's local IP in API_BASE_URL
-```
+- Docker & Docker Compose
+- Un fichier `.env` à la racine (voir [Configuration](#-configuration))
 
-### 3. Run in development mode
+### Lancer en développement
 
 ```bash
 docker compose --profile dev up --build
 ```
 
-Services will be available at:
-- API Gateway  → http://localhost:8000
-- Obstacle     → http://localhost:8001
-- OCR          → http://localhost:8002
-- Money        → http://localhost:8003
-- Portainer    → http://localhost:9000
-
-### 4. Run your service only (recommended during development)
+### Lancer en production
 
 ```bash
-# M2 — only run obstacle service
-docker compose up obstacle-service --build
-
-# M3 — only run OCR service
-docker compose up ocr-service --build
-
-# M4 — only run money service
-docker compose up money-service --build
+docker compose --profile production up --build -d
 ```
 
-### 5. Run training
+### Lancer un entraînement (ex: obstacle)
 
 ```bash
-# Train all models
-docker compose --profile training up
-
-# Train one model only
-docker compose run obstacle-trainer
-docker compose run ocr-trainer
-docker compose run money-trainer
+docker compose --profile training run obstacle-trainer
 ```
 
-### 6. Run in production
+##  Configuration
+
+Créer un fichier `.env` à la racine du projet (**ne jamais le committer**) :
+
+```env
+OBSTACLE_URL=http://obstacle-service:8001
+OCR_URL=http://ocr-service:8002
+MONEY_URL=http://money-service:8003
+
+GROQ_API_KEY=your_groq_api_key
+GEMINI_API_KEY=your_gemini_api_key
+
+EPOCHS=50
+BATCH_SIZE=16
+IMG_SIZE=640
+```
+
+>  **Sécurité** : le fichier `.env` doit impérativement être ajouté au `.gitignore`. En cas de fuite de clés API, les régénérer immédiatement depuis les consoles Groq/Google AI Studio.
+
+## 📡 Endpoints principaux (API Gateway)
+
+| Méthode | Route | Description |
+|---|---|---|
+| `GET` | `/` | Informations générales sur l'API |
+| `GET` | `/health` | Vérifie l'état des services connectés |
+| `GET` | `/glasses/status` | Statut de connexion de l'ESP32-CAM |
+| `POST` | `/analyze?mode=obstacle\|ocr\|money` | Envoie une image pour analyse |
+| `WS` | `/ws/resultats` | Flux temps réel des résultats vers l'app Android |
+
+##  Tests
 
 ```bash
-docker compose --profile production up -d
+cd obstacle-service
+pytest tests/
 ```
 
----
+##  Stack technique
 
-## API Reference
+- **Backend** : FastAPI, httpx, Uvicorn
+- **Vision** : YOLOv8 (Ultralytics), OpenCV
+- **OCR** : Tesseract (fra/ara/eng + modèle Tifinagh personnalisé), EasyOCR, Groq (Llama 4 Scout) + Gemini en fallback
+- **Infra** : Docker Compose (profils `dev`, `production`, `training`), Portainer
+- **Hardware** : ESP32-CAM
+- **Client** : Application Android (Kotlin, Gradle) connectée en WebSocket
 
-### POST /analyze
-
-Send an image with a mode to get AI analysis.
-
-**Request:**
-```
-POST http://localhost:8000/analyze?mode=obstacle
-Content-Type: multipart/form-data
-Body: file=<image.jpg>
-```
-
-**Modes:**
-- `obstacle` → returns detected obstacles with positions
-- `ocr`      → returns extracted text with detected language
-- `money`    → returns banknote value and confidence
-
-**Response (obstacle):**
-```json
-{
-  "mode": "obstacle",
-  "success": true,
-  "processing_time_ms": 245.3,
-  "result": {
-    "objects": ["personne", "voiture"],
-    "distances": ["devant vous", "à droite"],
-    "alert_message": "Attention, personne devant vous, voiture à droite"
-  }
-}
-```
-
-**Response (ocr):**
-```json
-{
-  "mode": "ocr",
-  "success": true,
-  "processing_time_ms": 890.1,
-  "result": {
-    "text": "Pharmacie centrale",
-    "language": "fr",
-    "script": "latin",
-    "confidence": 0.94
-  }
-}
-```
-
-**Response (money):**
-```json
-{
-  "mode": "money",
-  "success": true,
-  "processing_time_ms": 120.7,
-  "result": {
-    "value": "200 dirhams",
-    "currency": "MAD",
-    "confidence": 0.97
-  }
-}
-```
-
----
-
-## Git Workflow
-
-```bash
-# Each member works on their own branch
-git checkout -b feature/M3-ocr
-
-# Only commit your own folder
-git add ocr-service/
-git commit -m "feat: add Tifinagh script detection"
-git push origin feature/M3-ocr
-
-# M1 merges into dev when ready
-git checkout dev
-git merge feature/M3-ocr
-```
-
-**Rule: never modify another member's folder.**
-
----
-
-## Datasets
-
-Datasets are NOT stored in GitHub (too large).  
-Place your data in the `datasets/` folder locally:
+##  Structure du projet
 
 ```
-datasets/
-├── obstacle/    → COCO format images + labels
-├── ocr/         → Tifinagh images + transcriptions (IRCAM dataset)
-└── money/       → Photos of MAD banknotes (200+ per class)
+Projet_PI/
+├── android-app/                 # Application Android (client WebSocket)
+├── api-gateway/
+│   ├── tests/
+│   ├── Dockerfile
+│   ├── main.py
+│   ├── router.py
+│   ├── schemas.py
+│   └── requirements.txt
+├── obstacle-service/
+│   ├── app/
+│   │   ├── build/
+│   │   └── src/
+│   ├── build/
+│   ├── datasets/
+│   ├── models/
+│   └── main.py
+├── money-service/
+│   ├── models/
+│   ├── tests/
+│   ├── trainer/
+│   │   ├── classifier.py
+│   │   └── Dockerfile
+│   └── main.py
+├── ocr-service/
+│   ├── groq_service.py
+│   ├── trainer/
+│   │   └── train_tesseract.py
+│   └── tessdata/
+├── docker-compose.yml
+└── .env (non versionné)
 ```
 
-## Models
 
-Trained models are NOT stored in GitHub.  
-After training, models are saved to `models/` locally.  
-Share models via USB or cloud storage (Google Drive, etc.).
+## 📄 Licence
 
----
-
-## Useful Commands
-
-```bash
-# See all running containers
-docker ps
-
-# See logs of a service
-docker compose logs -f ocr-service
-
-# Rebuild one service after code change
-docker compose up ocr-service --build
-
-# Stop everything
-docker compose down
-
-# Stop and remove all data
-docker compose down -v
-```
+Ce projet est distribué à des fins éducatives et de recherche.
