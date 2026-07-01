@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <!-- Couleur de fond bleu clair (Type Material Blue 50 ou 100) -->
+    <solid android:color="#E1F5FE" />
+
+    <!-- Taille par défaut (sera étiré par le FrameLayout) -->
+    <size
+        android:width="48dp"
+        android:height="48dp" />
+
+</shape>

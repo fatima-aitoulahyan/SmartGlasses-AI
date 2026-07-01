@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SmartGlasses AI</string>
+
+    <string name="open">فتح القائمة</string>
+    <string name="close">إغلاق القائمة</string>
+    <string name="wifi_description">أدخل كلمة المرور للاتصال.</string>
+
+    <string name="wifi_default_network">HomeNetwork</string>
+    <string name="wifi_security">WPA2</string>
+    <string name="password_label">كلمة المرور</string>
+    <string name="password_hint">••••••••</string>
+    <string name="connect_button">اتصال</string>
+
+    <string name="language_title">اللغة</string>
+    <string name="language_description">اختر لغتك المفضلة</string>
+    <string name="lang_french">الفرنسية</string>
+    <string name="lang_english">الإنجليزية</string>
+    <string name="lang_arabic">العربية</string>
+
+    <string name="enter_name">أدخل اسمك</string>
+    <string name="start_button">ابدأ</string>
+
+    <string name="menu_dashboard">لوحة التحكم</string>
+    <string name="menu_wifi_glasses">واي فاي النظارة</string>
+    <string name="menu_language">اللغة</string>
+    <string name="menu_settings">الإعدادات</string>
+
+    <string name="about_title">حول التطبيق</string>
+    <string name="about_text">
+        SmartGlasses AI هو مساعد ذكي للأشخاص المكفوفين وضعاف البصر.
+        يساعد على التنقل بأمان بفضل خاصية رصد العقبات، قراءة النصوص، والدعم الصوتي لتعزيز الاستقلالية في الحياة اليومية.
+    </string>
+
+    <string name="last_update">في الانتظار...</string>
+    <string name="status_loading">جاري التحميل...</string>
+    <string name="status_desc">جاري الاتصال...</string>
+    <string name="wifi_title">واي فاي</string>
+    <string name="wifi_network">الشبكة</string>
+    <string name="wifi_signal">الإشارة</string>
+    <string name="wifi_quality">الجودة</string>
+    <string name="esp32">ESP32</string>
+    <string name="camera">الكاميرا</string>
+
+    <string name="greeting">مرحباً %1$s</string>
+    <string name="system_activated">تم تفعيل النظام</string>
+
+    <string name="status_connected">النظام متصل</string>
+    <string name="status_disconnected">غير متصل</string>
+    <string name="status_all_ok">كل شيء يعمل بشكل طبيعي</string>
+    <string name="section_network">اتصال الشبكة</string>
+    <string name="label_wifi_network">شبكة الواي فاي</string>
+    <string name="label_signal_strength">قوة الإشارة</string>
+    <string name="label_embedded_camera">الكاميرا المدمجة</string>
+    <string name="status_ready">جاهز</string>
+    <string name="status_inactive">غير نشط</string>
+    <string name="label_battery">البطارية</string>
+
+    <string name="tts_battery_level">مستوى شحن البطارية هو %1$s</string>
+    <string name="tts_wifi_prefix">واي فاي : </string>
+
+    <string name="alert_connection_changed">تغيرت حالة الاتصال.</string>
+    <string name="alert_battery_low_msg">البطارية ضعيفة، %1$d في المئة.</string>
+
+    <string name="status_global_disconnected">النظارة غير متصلة.</string>
+
+    <string name="ocr_text_prefix">النص: </string>
+    <string name="money_detected">تم رصد مبلغ : %1$.2f درهم</string>
+
+    <string name="wifi_config_title">إعدادات الواي فاي</string>
+    <string name="wifi_config_subtitle">قم بإعداد الاتصال الخاص بنظارتك الذكية</string>
+    <string name="hint_ssid">(SSID) اسم الشبكة</string>
+    <string name="hint_password">كلمة المرور</string>
+    <string name="btn_update_connect">تحديث الاتصال</string>
+
+    <string name="status_global_connected">النظارة متصلة. البطارية %1$d في المئة. الكاميرا %2$s.</string>
+</resources>

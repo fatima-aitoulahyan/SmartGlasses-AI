@@ -1,0 +1,25 @@
+name: CI — Obstacle Service
+
+on:
+  push:
+    paths:
+      - 'obstacle-service/**'
+  pull_request:
+    paths:
+      - 'obstacle-service/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t obstacle-service ./obstacle-service
+
+      - name: Run tests
+        run: |
+          docker run --rm obstacle-service \
+            python -m pytest tests/ -v --tb=short

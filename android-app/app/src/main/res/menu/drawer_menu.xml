@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_dashboard"
+        android:title="@string/menu_dashboard"
+        android:icon="@drawable/ic_home"/>
+
+    <item
+        android:id="@+id/menu_wifi"
+        android:title="@string/menu_wifi_glasses"
+        android:icon="@drawable/ic_wifi"/>
+
+    <item
+        android:id="@+id/menu_language"
+        android:title="@string/menu_language"
+        android:icon="@drawable/ic_language"/>
+
+    <item
+        android:id="@+id/menu_about"
+        android:title="@string/about_title"
+        android:icon="@drawable/ic_info"/>
+
+</menu>

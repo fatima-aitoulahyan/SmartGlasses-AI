@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+    <!-- Monture gauche -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#2E7D32"
+        android:strokeWidth="2.5"
+        android:pathData="M4,24 C4,18 8,14 14,14 C20,14 24,18 24,24 C24,18 28,14 34,14 C40,14 44,18 44,24 C44,30 40,34 34,34 C28,34 24,30 24,24 C24,30 20,34 14,34 C8,34 4,30 4,24 Z"/>
+
+    <!-- Pont central -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#2E7D32"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M24,22 C24,22 24,22 24,22"/>
+
+    <!-- Point lumineux gauche (connecté) -->
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M14,21 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0"/>
+
+    <!-- Point lumineux droit (connecté) -->
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M34,21 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0"/>
+
+    <!-- Branche gauche -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#2E7D32"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M4,24 L1,22"/>
+
+    <!-- Branche droite -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#2E7D32"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M44,24 L47,22"/>
+
+</vector>

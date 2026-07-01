@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <!-- Couleurs -->
+    <color name="background_light">#FFFFFF</color>
+    <color name="background_secondary">#F7F7F5</color>
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#888780</color>
+    <color name="color_primary">#185FA5</color>
+    <color name="border_light">#E0DED8</color>
+
+
+    <!-- Couleurs force mot de passe -->
+    <color name="strength_weak">#E24B4A</color>
+    <color name="strength_fair">#EF9F27</color>
+    <color name="strength_good">#639922</color>
+    <color name="strength_strong">#1D9E75</color>
+
+    <color name="colorPrimary">#1E88E5</color>
+
+    <!-- Status -->
+    <color name="status_online">#2E7D32</color>
+    <color name="status_online_bg">#E8F5E9</color>
+    <color name="status_offline">#C62828</color>
+    <color name="status_offline_bg">#FFEBEE</color>
+
+    <color name="card_background">#FFFFFF</color>
+    <color name="divider">#EEEEEE</color>
+    <color name="background">#F5F5F5</color>
+    <color name="teal_700">#FF018786</color>
+</resources>

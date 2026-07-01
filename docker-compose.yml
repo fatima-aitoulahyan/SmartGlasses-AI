@@ -1,0 +1,124 @@
+version: '3.9'
+
+networks:
+  smartglasses-network:
+    driver: bridge
+
+volumes:
+  portainer_data:
+
+services:
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8000:8000"
+    networks:
+      - smartglasses-network
+    env_file:
+      - .env
+    depends_on:
+      - obstacle-service
+      - ocr-service
+      - money-service
+    restart: unless-stopped
+    profiles: ["production", "dev"]
+
+  obstacle-service:
+    build: ./obstacle-service
+    container_name: obstacle-service
+    ports:
+      - "8001:8001"
+    networks:
+      - smartglasses-network
+    volumes:
+      - ./models:/app/models:delegated
+    env_file:
+      - .env
+    restart: unless-stopped
+    profiles: ["production", "dev"]
+
+  obstacle-trainer:
+    build: ./obstacle-service/trainer
+    container_name: obstacle-trainer
+    volumes:
+      - ./models/obstacle:/app/models
+      - ./datasets/obstacle:/app/data
+    networks:
+      - smartglasses-network
+    env_file:
+      - .env
+    profiles: ["training"]
+
+  ocr-service:
+    build: ./ocr-service
+    container_name: ocr-service
+    ports:
+      - "8002:8002"
+    networks:
+      - smartglasses-network
+    volumes:
+      - ./ocr-service:/app
+      - ./ocr-service/models/ocr:/app/models
+      - ./ocr-service/tessdata:/usr/share/tesseract-ocr/5/tessdata
+    environment:
+      - PYTHONPATH=/app
+    env_file:
+      - .env
+    restart: unless-stopped
+    profiles: [ "production", "dev" ]
+
+  ocr-trainer:
+    build: ./ocr-service/trainer
+    container_name: ocr-trainer
+    volumes:
+      - ./ocr-service:/app
+      - ./ocr-service/models/ocr:/app/models
+      - ./ocr-service/models/ocr:/app/models
+      - ./ocr-service/tessdata:/app/tessdata
+    networks:
+      - smartglasses-network
+    profiles: ["training"]
+
+  money-service:
+    build:
+      context: ./money-service
+      dockerfile: Dockerfile
+    container_name: money-service
+    ports:
+      - "8003:8003"
+    networks:
+      - smartglasses-network
+    volumes:
+      - ./money-service/models:/app/models:delegated
+
+    env_file:
+      - .env
+    restart: unless-stopped
+    profiles: [ "production", "dev" ]
+
+  money-trainer:
+      build: ./money-service/trainer
+      container_name: money-trainer
+      volumes:
+        - ./money-service/models/money:/app/models
+        - ./money-service/datasets/money:/app/data
+      networks:
+        - smartglasses-network
+      env_file:
+        - .env
+      profiles: [ "training" ]
+
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - smartglasses-network
+    restart: unless-stopped
+    profiles: ["production", "dev"]

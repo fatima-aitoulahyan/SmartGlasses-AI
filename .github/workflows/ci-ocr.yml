@@ -1,0 +1,25 @@
+name: CI — OCR Service
+
+on:
+  push:
+    paths:
+      - 'ocr-service/**'
+  pull_request:
+    paths:
+      - 'ocr-service/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t ocr-service ./ocr-service
+
+      - name: Run tests
+        run: |
+          docker run --rm ocr-service \
+            python -m pytest tests/ -v --tb=short

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SmartGlasses AI</string>
+
+    <string name="open">Ouvrir le menu</string>
+    <string name="close">Fermer le menu</string>
+    <string name="wifi_description">Entrez le mot de passe pour vous connecter.</string>
+
+    <string name="wifi_default_network">HomeNetwork</string>
+    <string name="wifi_security">WPA2</string>
+    <string name="password_label">MOT DE PASSE</string>
+    <string name="password_hint">••••••••</string>
+    <string name="connect_button">Se connecter</string>
+
+    <string name="language_title">Langue</string>
+    <string name="language_description">Choisissez votre langue préférée</string>
+    <string name="lang_french">Français</string>
+    <string name="lang_english">Anglais</string>
+    <string name="lang_arabic">Arabe</string>
+
+    <string name="enter_name">Entrez votre nom</string>
+    <string name="start_button">Commencer</string>
+
+    <string name="menu_dashboard">Tableau de bord</string>
+    <string name="menu_wifi_glasses">WiFi des lunettes</string>
+    <string name="menu_language">Langue</string>
+    <string name="menu_settings">Paramètres</string>
+
+    <string name="about_title">À propos</string>
+    <string name="about_text">
+        SmartGlasses AI est un assistant intelligent pour les personnes malvoyantes.
+        Il aide à se déplacer en sécurité grâce à la détection d’obstacles,
+        la lecture de texte et une assistance vocale, afin de favoriser l’autonomie au quotidien.
+    </string>
+
+    <string name="last_update">En attente...</string>
+    <string name="status_loading">Chargement...</string>
+    <string name="status_desc">Connexion en cours</string>
+    <string name="wifi_title">WiFi</string>
+    <string name="wifi_network">Réseau</string>
+    <string name="wifi_signal">Signal</string>
+    <string name="wifi_quality">Qualité</string>
+    <string name="esp32">ESP32</string>
+    <string name="camera">Caméra</string>
+
+    <string name="greeting">Bonjour %1$s</string>
+    <string name="system_activated">Système activé</string>
+
+    <string name="status_connected">Système Connecté</string>
+    <string name="status_disconnected">Déconnecté</string>
+    <string name="status_all_ok">Tout fonctionne normalement</string>
+    <string name="section_network">CONNEXION RÉSEAU</string>
+    <string name="label_wifi_network">Réseau WiFi</string>
+    <string name="label_signal_strength">Force du signal</string>
+    <string name="label_embedded_camera">Caméra Embarquée</string>
+    <string name="status_ready">PRÊT</string>
+    <string name="status_inactive">INACTIVE</string>
+    <string name="label_battery">Batterie</string>
+
+    <string name="tts_battery_level">Le niveau de charge de la batterie est de %1$s</string>
+    <string name="tts_wifi_prefix">Wi-Fi : </string>
+
+    <string name="alert_connection_changed">Connexion modifiée.</string>
+    <string name="alert_battery_low_msg">Batterie faible, %1$d pour cent.</string>
+
+    <string name="status_global_disconnected">Les lunettes sont déconnectées.</string>
+
+    <string name="ocr_text_prefix">Texte : </string>
+    <string name="money_detected">Monnaie détectée : %1$.2f dirhams</string>
+
+    <string name="wifi_config_title">Configuration WiFi</string>
+    <string name="wifi_config_subtitle">Configurez la connexion pour vos SmartGlasses</string>
+    <string name="hint_ssid">Nom du réseau (SSID)</string>
+    <string name="hint_password">Mot de passe</string>
+    <string name="btn_update_connect">Mettre à jour et Connecter</string>
+
+    <string name="status_global_connected">Lunettes connectées. Batterie à %1$d pour cent. Caméra %2$s.</string>
+</resources>

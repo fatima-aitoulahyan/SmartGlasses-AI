@@ -1,0 +1,26 @@
+name: CI — API Gateway
+
+on:
+  push:
+    paths:
+      - 'api-gateway/**'
+      - 'docker-compose.yml'
+  pull_request:
+    paths:
+      - 'api-gateway/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t api-gateway ./api-gateway
+
+      - name: Run tests
+        run: |
+          docker run --rm api-gateway \
+            python -m pytest tests/ -v --tb=short

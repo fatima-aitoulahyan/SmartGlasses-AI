@@ -1,0 +1,30 @@
+# Models IA
+models/*
+!models/.gitkeep
+!models/README.md
+
+**/models/
+*.pt
+*.pth
+*.onnx
+
+# Datasets
+datasets/*
+!datasets/.gitkeep
+!datasets/README.md
+**/datasets/
+
+# Build Android
+app/build/
+build/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment
+.env
+.env.*
+!.env.example
