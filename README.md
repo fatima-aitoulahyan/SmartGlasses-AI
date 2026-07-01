@@ -140,8 +140,3 @@ Projet_PI/
 ├── docker-compose.yml
 └── .env (non versionné)
 ```
-
-
-## 📄 Licence
-
-Ce projet est distribué à des fins éducatives et de recherche.
