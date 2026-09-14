@@ -1,68 +1,76 @@
-#  SmartGlasses AI
+# SmartGlasses AI
 
-Système de lunettes intelligentes pour personnes malvoyantes, basé sur une architecture de microservices IA. Une caméra ESP32-CAM capture les images du terrain, qui sont analysées en temps réel par des services d'IA spécialisés (détection d'obstacles, lecture de texte, reconnaissance de billets marocains), puis les résultats sont renvoyés à une application Android via WebSocket.
+Smart glasses system for visually impaired users, built on an AI microservices architecture. An ESP32-CAM camera captures images of the surroundings, which are analyzed in real time by specialized AI services (obstacle detection, text reading, Moroccan banknote recognition), and the results are sent back to an Android application via WebSocket.
 
-##  Architecture
+![SmartGlasses AI Prototype](assets/hardware.png)
+
+## Architecture
 
 ```
 ESP32-CAM ──HTTP──> API Gateway (FastAPI) ──┬──> Obstacle Service (YOLOv8)
                           │                  ├──> OCR Service (Tesseract/EasyOCR)
                           │                  └──> Money Service (YOLOv8)
                           │
-                          └──WebSocket──> Application Android
+                          └──WebSocket──> Android Application
 ```
 
-Chaque service IA est un conteneur Docker indépendant, exposé via une API REST interne. L'API Gateway route les requêtes selon le mode demandé (`obstacle`, `ocr`, `money`) et diffuse les résultats en temps réel aux clients connectés via WebSocket.
+Each AI service is an independent Docker container, exposed via an internal REST API. The API Gateway routes requests according to the requested mode (`obstacle`, `ocr`, `money`) and streams results in real time to connected clients via WebSocket.
 
-##  Services
+## Services
 
-| Service | Port | Rôle | Modèle |
+| Service | Port | Role | Model |
 |---|---|---|---|
-| **api-gateway** | 8000 | Point d'entrée unique, routage, WebSocket | FastAPI |
-| **obstacle-service** | 8001 | Détection d'obstacles et distances | YOLOv8 |
-| **ocr-service** | 8002 | Lecture de texte (FR/AR/ES/Tifinagh) | Tesseract + EasyOCR + fallback Groq/Gemini |
-| **money-service** | 8003 | Reconnaissance de billets/pièces marocains | YOLOv8 |
+| **api-gateway** | 8000 | Single entry point, routing, WebSocket | FastAPI |
+| **obstacle-service** | 8001 | Obstacle detection and distances | YOLOv8 |
+| **ocr-service** | 8002 | Text reading (FR/AR/ES/Tifinagh) | Tesseract + EasyOCR + Groq/Gemini fallback |
+| **money-service** | 8003 | Moroccan banknote/coin recognition | YOLOv8 |
 
-Un service **Portainer** est inclus pour la supervision des conteneurs.
+A **Portainer** service is included for container monitoring.
 
-##  Fonctionnalités clés
+## Key Features
 
-- **Routage dynamique** des images selon le mode d'analyse (`/analyze?mode=obstacle|ocr|money`)
-- **Diffusion temps réel** des résultats vers l'application Android via WebSocket (`/ws/resultats`)
-- **OCR multilingue** avec détection automatique de la langue (français, arabe, espagnol) et lecture à voix haute adaptée pour utilisateurs malvoyants
-- **Support du Tifinagh/Amazigh** avec fallback sur un modèle vision (Gemini) lorsque le script n'est pas reconnu par le modèle principal
-- **Limitation de débit et mémoire de contexte** pour l'OCR, afin d'améliorer la cohérence des lectures successives
-- **Statut de connexion ESP32** exposé via `/glasses/status`
-- **Entraînement des modèles** intégré via des conteneurs dédiés (`obstacle-trainer`, `ocr-trainer`, `money-trainer`)
+- **Dynamic routing** of images based on analysis mode (`/analyze?mode=obstacle|ocr|money`)
+- **Real-time streaming** of results to the Android app via WebSocket (`/ws/resultats`)
+- **Multilingual OCR** with automatic language detection (French, Arabic, Spanish) and text-to-speech adapted for visually impaired users
+- **Tifinagh/Amazigh support** with fallback to a vision model (Gemini) when the script is not recognized by the main model
+- **Rate limiting and context memory** for OCR, to improve consistency across successive readings
+- **ESP32 connection status** exposed via `/glasses/status`
+- **Integrated model training** via dedicated containers (`obstacle-trainer`, `ocr-trainer`, `money-trainer`)
 
-##  Démarrage rapide
+## Android Application
 
-### Prérequis
+| Home Screen | WiFi Configuration | Language Selection |
+|---|---|---|
+| ![Home screen](assets/app-dashboard.png) | ![WiFi configuration](assets/app-wifi-config.png) | ![Language selection](assets/app-language.png) |
+
+## Quick Start
+
+### Prerequisites
 
 - Docker & Docker Compose
-- Un fichier `.env` à la racine (voir [Configuration](#-configuration))
+- A `.env` file at the project root (see [Configuration](#configuration))
 
-### Lancer en développement
+### Run in development
 
 ```bash
 docker compose --profile dev up --build
 ```
 
-### Lancer en production
+### Run in production
 
 ```bash
 docker compose --profile production up --build -d
 ```
 
-### Lancer un entraînement (ex: obstacle)
+### Run a training job (e.g. obstacle)
 
 ```bash
 docker compose --profile training run obstacle-trainer
 ```
 
-##  Configuration
+## Configuration
 
-Créer un fichier `.env` à la racine du projet (**ne jamais le committer**) :
+Create a `.env` file at the project root (**never commit it**):
 
 ```env
 OBSTACLE_URL=http://obstacle-service:8001
@@ -77,39 +85,39 @@ BATCH_SIZE=16
 IMG_SIZE=640
 ```
 
->  **Sécurité** : le fichier `.env` doit impérativement être ajouté au `.gitignore`. En cas de fuite de clés API, les régénérer immédiatement depuis les consoles Groq/Google AI Studio.
+> **Security**: the `.env` file must always be added to `.gitignore`. If API keys are leaked, regenerate them immediately from the Groq/Google AI Studio consoles.
 
-## 📡 Endpoints principaux (API Gateway)
+## Main Endpoints (API Gateway)
 
-| Méthode | Route | Description |
+| Method | Route | Description |
 |---|---|---|
-| `GET` | `/` | Informations générales sur l'API |
-| `GET` | `/health` | Vérifie l'état des services connectés |
-| `GET` | `/glasses/status` | Statut de connexion de l'ESP32-CAM |
-| `POST` | `/analyze?mode=obstacle\|ocr\|money` | Envoie une image pour analyse |
-| `WS` | `/ws/resultats` | Flux temps réel des résultats vers l'app Android |
+| `GET` | `/` | General API information |
+| `GET` | `/health` | Checks the status of connected services |
+| `GET` | `/glasses/status` | ESP32-CAM connection status |
+| `POST` | `/analyze?mode=obstacle\|ocr\|money` | Sends an image for analysis |
+| `WS` | `/ws/resultats` | Real-time result stream to the Android app |
 
-##  Tests
+## Tests
 
 ```bash
 cd obstacle-service
 pytest tests/
 ```
 
-##  Stack technique
+## Tech Stack
 
-- **Backend** : FastAPI, httpx, Uvicorn
-- **Vision** : YOLOv8 (Ultralytics), OpenCV
-- **OCR** : Tesseract (fra/ara/eng + modèle Tifinagh personnalisé), EasyOCR, Groq (Llama 4 Scout) + Gemini en fallback
-- **Infra** : Docker Compose (profils `dev`, `production`, `training`), Portainer
-- **Hardware** : ESP32-CAM
-- **Client** : Application Android (Kotlin, Gradle) connectée en WebSocket
+- **Backend**: FastAPI, httpx, Uvicorn
+- **Vision**: YOLOv8 (Ultralytics), OpenCV
+- **OCR**: Tesseract (fra/ara/eng + custom Tifinagh model), EasyOCR, Groq (Llama 4 Scout) + Gemini fallback
+- **Infra**: Docker Compose (`dev`, `production`, `training` profiles), Portainer
+- **Hardware**: ESP32-CAM
+- **Client**: Android application (Kotlin, Gradle) connected via WebSocket
 
-##  Structure du projet
+## Project Structure
 
 ```
 Projet_PI/
-├── android-app/                 # Application Android (client WebSocket)
+├── android-app/                 # Android application (WebSocket client)
 ├── api-gateway/
 │   ├── tests/
 │   ├── Dockerfile
@@ -138,5 +146,5 @@ Projet_PI/
 │   │   └── train_tesseract.py
 │   └── tessdata/
 ├── docker-compose.yml
-└── .env (non versionné)
+└── .env (not versioned)
 ```
